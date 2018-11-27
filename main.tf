@@ -93,3 +93,27 @@ resource "aws_security_group" "wp_db_sg" {
         self = true
     }
 }
+
+resource "aws_db_subnet_group" "wp_db" {
+  name       = "main"
+  subnet_ids = ["${aws_subnet.public.*.id}"]
+}
+
+resource "aws_rds_cluster" "wp_db" {
+  cluster_identifier      = "wp-db"
+  database_name           = "wordpress"
+  master_username         = "root"
+  master_password         = "${var.db_password}"
+  backup_retention_period = 5
+  preferred_backup_window = "05:00-06:00"
+  vpc_security_group_ids  = ["${aws_security_group.wp_db_sg.id}"]
+  db_subnet_group_name    = "${aws_db_subnet_group.wp_db.name}"
+  skip_final_snapshot     = true
+}
+
+resource "aws_rds_cluster_instance" "wp_db" {
+    count              = 2
+    identifier         = "wp-db-${count.index}"
+    cluster_identifier = "${aws_rds_cluster.wp_db.id}"
+    instance_class     = "db.t2.small"
+}
