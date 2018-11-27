@@ -1,10 +1,10 @@
 # Terraform
 
-Create the hosting infrastructure in AWS for Anime eSport.
+Create the hosting infrastructure in AWS for Anima eSport.
 
 ![Infrastructure Diagram][diagram]
 
-## Planing
+## Planning
 
 Before applying the infrastructure model, you should review the change:
 
