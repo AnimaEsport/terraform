@@ -80,3 +80,16 @@ resource "aws_security_group" "wp_web_sg" {
         cidr_blocks = ["0.0.0.0/0"]
     }
 }
+
+resource "aws_security_group" "wp_db_sg" {
+    name = "wp-db"
+    description = "Security Group for Wordpress database"
+    vpc_id = "${aws_vpc.main.id}"
+
+    ingress {
+        from_port = 3306
+        to_port = 3306
+        protocol = "tcp"
+        self = true
+    }
+}
