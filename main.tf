@@ -122,3 +122,13 @@ resource "aws_key_pair" "deployer" {
     key_name   = "deployer-key"
     public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCjetvYAZ2K9rMTyf+iYkcmESkdTec5j+QW/vhdB6KMLAu1hZQHx7pYRB5HvThUtLwZCXbcJUHRsJoU5bxYwHdMFcGCb3B6pPjIzUc0yuQ8PJPt3Fnwp0wTl7N6Jci18ogGLWqPFa3oEpUW1Xf6sxVlYZ1fEccrygV1+qkzdb+zmWUV+Vx7L3fU6I0+Jnux0mseytO8rKgk9W5+YK46bowdTrXrOMhAWd8Mlz4Q9JKjfK1RGi50myeWXo4Sx2Z5bqPBvn3eBmuSu7fFR15vryw0It2vauNDAcWJ3CC4Tdy1u3QscTn37s2hCYKY7ZvRYYbv9upQUbvybKUQDq7C4oTJ"
 }
+
+resource "aws_instance" "wp_web" {
+    ami                    = "ami-08182c55a1c188dee"
+    subnet_id              = "${element(aws_subnet.public.*.id, count.index%2)}"
+    vpc_security_group_ids = ["${aws_security_group.wp_web_sg.id}", "${aws_security_group.wp_db_sg.id}"]
+    instance_type          = "t2.nano"
+    count                  = 2
+    key_name               = "${aws_key_pair.deployer.key_name}"
+    user_data              = "#!/bin/bash\napt-get -y update\napt-get -y python\n"
+}
