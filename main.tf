@@ -132,3 +132,13 @@ resource "aws_instance" "wp_web" {
     key_name               = "${aws_key_pair.deployer.key_name}"
     user_data              = "#!/bin/bash\napt-get -y update\napt-get -y python\n"
 }
+
+resource "aws_acm_certificate" "wp" {
+  domain_name               = "anima-esport.com"
+  subject_alternative_names = ["www.anima-esport.com"]
+  validation_method         = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
