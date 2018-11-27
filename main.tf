@@ -142,3 +142,54 @@ resource "aws_acm_certificate" "wp" {
     create_before_destroy = true
   }
 }
+
+resource "aws_lb" "wp_lb" {
+    name               = "anima"
+    internal           = false
+    load_balancer_type = "application"
+    security_groups    = ["${aws_security_group.wp_lb_sg.id}"]
+    subnets            = ["${aws_subnet.public.*.id}"]
+}
+
+resource "aws_lb_listener" "wp_https_listener" {
+  load_balancer_arn = "${aws_lb.wp_lb.arn}"
+  port              = 443
+  protocol          = "HTTPS"
+
+  certificate_arn = "${aws_acm_certificate.wp.arn}"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.wp_http.arn}"
+  }
+}
+
+resource "aws_lb_listener" "wp_http_listener" {
+  load_balancer_arn = "${aws_lb.wp_lb.arn}"
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.wp_http.arn}"
+  }
+}
+
+resource "aws_lb_target_group" "wp_http" {
+    name        = "wp-lb"
+    port        = 80
+    protocol    = "HTTP"
+    vpc_id      = "${aws_vpc.main.id}"
+    target_type = "instance"
+
+    health_check {
+        protocol = "HTTP"
+        port     = 80
+    }
+}
+
+resource "aws_lb_target_group_attachment" "wp_http" {
+    target_group_arn = "${aws_lb_target_group.wp_http.arn}"
+    target_id        = "${element(aws_instance.wp_web.*.id, count.index)}"
+    port             = 80
+}
