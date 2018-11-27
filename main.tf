@@ -117,3 +117,8 @@ resource "aws_rds_cluster_instance" "wp_db" {
     cluster_identifier = "${aws_rds_cluster.wp_db.id}"
     instance_class     = "db.t2.small"
 }
+
+resource "aws_key_pair" "deployer" {
+    key_name   = "deployer-key"
+    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCjetvYAZ2K9rMTyf+iYkcmESkdTec5j+QW/vhdB6KMLAu1hZQHx7pYRB5HvThUtLwZCXbcJUHRsJoU5bxYwHdMFcGCb3B6pPjIzUc0yuQ8PJPt3Fnwp0wTl7N6Jci18ogGLWqPFa3oEpUW1Xf6sxVlYZ1fEccrygV1+qkzdb+zmWUV+Vx7L3fU6I0+Jnux0mseytO8rKgk9W5+YK46bowdTrXrOMhAWd8Mlz4Q9JKjfK1RGi50myeWXo4Sx2Z5bqPBvn3eBmuSu7fFR15vryw0It2vauNDAcWJ3CC4Tdy1u3QscTn37s2hCYKY7ZvRYYbv9upQUbvybKUQDq7C4oTJ"
+}
