@@ -193,3 +193,27 @@ resource "aws_lb_target_group_attachment" "wp_http" {
     target_id        = "${element(aws_instance.wp_web.*.id, count.index)}"
     port             = 80
 }
+
+resource "aws_route53_zone" "main" {
+    name = "anima-esport.com."
+}
+
+resource "aws_route53_record" "wp_main" {
+    zone_id = "${aws_route53_zone.main.zone_id}"
+    name = "${aws_route53_zone.main.name}"
+    type = "A"
+
+    alias {
+        name = "${aws_lb.wp_lb.dns_name}"
+        zone_id = "${aws_lb.wp_lb.zone_id}"
+        evaluate_target_health = false
+    }
+}
+
+resource "aws_route53_record" "wp_www" {
+  zone_id = "${aws_route53_zone.main.zone_id}"
+  name    = "www.${aws_route53_zone.main.name}"
+  type    = "CNAME"
+  ttl     = "30"
+  records = ["${aws_route53_zone.main.name}"]
+}
